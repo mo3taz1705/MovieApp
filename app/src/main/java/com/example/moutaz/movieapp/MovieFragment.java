@@ -1,5 +1,6 @@
 package com.example.moutaz.movieapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
@@ -54,6 +55,15 @@ public class MovieFragment extends Fragment {
     private boolean trailersDone;
     private SharedPreferences sharedpreferences;
     private boolean noConnection;
+    private String className;
+    private Activity currActivity;
+
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+        currActivity = activity;
+        className = activity.getClass().getSimpleName();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,6 +76,8 @@ public class MovieFragment extends Fragment {
 
         noConnection = false;
         new getData().execute("trailer");
+
+
 
         Bundle arguments = getArguments();
         if (arguments == null) {
@@ -138,6 +150,10 @@ public class MovieFragment extends Fragment {
                     editor.putString(Long.toString(size) + "imageLink", imageLink);
                     editor.commit();
                     favBtn.setText("remove from Favorites");
+                }
+
+                if(className.equals("MainActivity")){
+                    ((MainActivity)currActivity).updateView();
                 }
             }
 

@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 public class GridFragment extends Fragment {
 
-    private int mPosition = GridView.INVALID_POSITION;
+    private int mPosition = 0;
     private static final String SELECTED_KEY = "selected_position";
 
     private GridView gridView;
@@ -126,10 +126,10 @@ public class GridFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mPosition != GridView.INVALID_POSITION) {
-            outState.putInt(SELECTED_KEY, mPosition);
-        }
-        outState.putString("lastStatus", lastStatus);
+//        if (mPosition != GridView.INVALID_POSITION) {
+//            outState.putInt(SELECTED_KEY, mPosition);
+//        }
+//        outState.putString("lastStatus", lastStatus);
 
         saveToPreferences();
     }
@@ -138,7 +138,7 @@ public class GridFragment extends Fragment {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("state", lastStatus);
-        if (mPosition != GridView.INVALID_POSITION) {
+        if (mPosition < gridItemArrayList.size()) {
             editor.putInt(SELECTED_KEY, mPosition);
         }
         editor.commit();
@@ -147,37 +147,44 @@ public class GridFragment extends Fragment {
     private void getFromPreferences(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         lastStatus = preferences.getString("state", "Popularity");
-        mPosition = preferences.getInt(SELECTED_KEY, GridView.INVALID_POSITION);
+        mPosition = preferences.getInt(SELECTED_KEY, 0);
     }
 
-    private void updateView() {
-        lastStatus = "Fav";
+    public void updateView() {
 
-        long size = sharedpreferences.getLong("size", 0);
-        if(size == 0){
-            noFavTV.setVisibility(View.VISIBLE);
-            gridView.setVisibility(View.GONE);
-        }
-        gridItemArrayList.clear();
-        for(long i = 1; i <= size; i++){
-            if(sharedpreferences.contains(Long.toString(i) + "ID")) {
-                GridItem gridItem = new GridItem();
-                gridItem.setId(Integer.parseInt(sharedpreferences.getString(Long.toString(i) + "ID", "")));
-                gridItem.setOrigTitle(sharedpreferences.getString(Long.toString(i) + "title", ""));
-                gridItem.setRelDate(sharedpreferences.getString(Long.toString(i) + "year", ""));
-                gridItem.setVoteAvg(sharedpreferences.getString(Long.toString(i) + "rate", ""));
-                gridItem.setOverview(sharedpreferences.getString(Long.toString(i) + "overview", ""));
-                gridItem.setImage(sharedpreferences.getString(Long.toString(i) + "imageLink", ""));
-                gridItemArrayList.add(gridItem);
+        if(lastStatus.equals("Fav")) {
+            long size = sharedpreferences.getLong("size", 0);
+            if (size == 0) {
+                noFavTV.setVisibility(View.VISIBLE);
+                gridView.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.GONE);
             }
-        }
-        if(gridItemArrayList.size()>0) {
-            gridViewAdapter.setGridData(gridItemArrayList);
-        }else{
-            noFavTV.setVisibility(View.VISIBLE);
-            gridView.setVisibility(View.GONE);
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putLong("size", 0);
+            gridItemArrayList.clear();
+            for (long i = 1; i <= size; i++) {
+                if (sharedpreferences.contains(Long.toString(i) + "ID")) {
+                    GridItem gridItem = new GridItem();
+                    gridItem.setId(Integer.parseInt(sharedpreferences.getString(Long.toString(i) + "ID", "")));
+                    gridItem.setOrigTitle(sharedpreferences.getString(Long.toString(i) + "title", ""));
+                    gridItem.setRelDate(sharedpreferences.getString(Long.toString(i) + "year", ""));
+                    gridItem.setVoteAvg(sharedpreferences.getString(Long.toString(i) + "rate", ""));
+                    gridItem.setOverview(sharedpreferences.getString(Long.toString(i) + "overview", ""));
+                    gridItem.setImage(sharedpreferences.getString(Long.toString(i) + "imageLink", ""));
+                    gridItemArrayList.add(gridItem);
+                }
+            }
+            if (gridItemArrayList.size() > 0) {
+                gridViewAdapter.setGridData(gridItemArrayList);
+                if(mPosition >= gridItemArrayList.size()) {
+                    mPosition = 0;
+                }
+                gridView.smoothScrollToPosition(mPosition);
+                ((Callback) getActivity()).onItemSelected(gridItemArrayList.get(mPosition));
+            } else {
+                noFavTV.setVisibility(View.VISIBLE);
+                gridView.setVisibility(View.GONE);
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putLong("size", 0);
+            }
         }
 
     }
@@ -192,6 +199,7 @@ public class GridFragment extends Fragment {
                 else
                     item.setChecked(true);
                 if (!(lastStatus.equals(getString(R.string.popular_tag)))) {
+                    mPosition = 0;
                     lastStatus = getString(R.string.popular_tag);
                     noConnection = false;
                     new FetchData().execute();
@@ -206,6 +214,7 @@ public class GridFragment extends Fragment {
                 else
                     item.setChecked(true);
                 if(!(lastStatus.equals(getString(R.string.rating_tag)))) {
+                    mPosition = 0;
                     lastStatus = getString(R.string.rating_tag);
                     noConnection = false;
                     new FetchData().execute();
@@ -219,7 +228,11 @@ public class GridFragment extends Fragment {
                     item.setChecked(false);
                 else
                     item.setChecked(true);
-                updateView();
+                if(!(lastStatus.equals("Fav"))) {
+                    mPosition = 0;
+                    lastStatus = "Fav";
+                    updateView();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -340,7 +353,11 @@ public class GridFragment extends Fragment {
             }
             mProgressBar.setVisibility(View.GONE);
 
+            if(mPosition >= gridItemArrayList.size()) {
+                mPosition = 0;
+            }
             gridView.smoothScrollToPosition(mPosition);
+            ((Callback) getActivity()).onItemSelected(gridItemArrayList.get(mPosition));
         }
     }
 

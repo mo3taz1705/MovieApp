@@ -74,6 +74,11 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
     }
 
 
+    public void updateView(){
+        FragmentManager fragmentManager = getFragmentManager();
+        GridFragment gf = (GridFragment) fragmentManager.findFragmentById(R.id.fragment);
+        gf.updateView();
+    }
 
 
 }
