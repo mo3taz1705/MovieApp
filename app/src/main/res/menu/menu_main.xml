@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/popularity"
+            android:title="@string/popular_tag"
+            />
+        <item android:id="@+id/rated"
+            android:title="@string/rating_tag" />
+
+        <item android:id="@+id/favorites"
+            android:title="@string/favorites_tag"/>
+    </group>
+</menu>

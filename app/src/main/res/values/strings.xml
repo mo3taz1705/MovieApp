@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">MovieApp</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_movie">movieActivity</string>
+
+    <string name="API_KEY">api_key=26a50b55affed1f8f4e66db557181705</string>
+    <string name="popular_movies">http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc</string>
+    <string name="highest_rated_movies">http://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc</string>
+    <string name="base_link">http://api.themoviedb.org/3/movie/</string>
+    <string name="videos">/videos</string>
+    <string name="reviews">/reviews</string>
+
+    <string name="img_base_URL">http://image.tmdb.org/t/p/</string>
+    <string name="img_size_small">w185/</string>
+    <string name="img_size_medium">w342/</string>
+    <string name="popular_tag">Popularity</string>
+    <string name="rating_tag">Rating</string>
+    <string name="favorites_tag">Favorites</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
