@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 public class GridFragment extends Fragment {
 
+    private AlertDialog alertDialog;
     private int mPosition = 0;
     private static final String SELECTED_KEY = "selected_position";
 
@@ -49,7 +50,7 @@ public class GridFragment extends Fragment {
     private boolean noConnection;
 
     public interface Callback {
-        public void onItemSelected(GridItem gridItem);
+        public void onItemSelected(GridItem gridItem, boolean clicked);
     }
 
 
@@ -102,7 +103,7 @@ public class GridFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id){
                 GridItem gridItem = (GridItem) parent.getItemAtPosition(position);
                 mPosition = position;
-                ((Callback) getActivity()).onItemSelected(gridItem);
+                ((Callback) getActivity()).onItemSelected(gridItem, true);
             }
         });
 
@@ -185,7 +186,7 @@ public class GridFragment extends Fragment {
                     mPosition = 0;
                 }
                 gridView.smoothScrollToPosition(mPosition);
-                ((Callback) getActivity()).onItemSelected(gridItemArrayList.get(mPosition));
+                ((Callback) getActivity()).onItemSelected(gridItemArrayList.get(mPosition), false);
             } else {
                 noFavTV.setVisibility(View.VISIBLE);
                 gridView.setVisibility(View.GONE);
@@ -375,7 +376,7 @@ public class GridFragment extends Fragment {
             }
             if(gridItemArrayList.size() > 0) {
                 gridView.smoothScrollToPosition(mPosition);
-                ((Callback) getActivity()).onItemSelected(gridItemArrayList.get(mPosition));
+                ((Callback) getActivity()).onItemSelected(gridItemArrayList.get(mPosition), false);
             }else{
                 showDialogMsg();
             }
@@ -389,11 +390,12 @@ public class GridFragment extends Fragment {
         alertDialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
+                alertDialog.dismiss();
                 getActivity().finish();
             }
         });
 
-        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
 
@@ -407,6 +409,4 @@ public class GridFragment extends Fragment {
 
         return isConnected;
     }
-
-
 }

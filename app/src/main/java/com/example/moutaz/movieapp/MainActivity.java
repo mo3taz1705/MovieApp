@@ -40,7 +40,7 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
     }
 
     @Override
-    public void onItemSelected(GridItem gridItem) {
+    public void onItemSelected(GridItem gridItem, boolean clicked) {
         if (mTwoPane) {
 
             //putting data from intent
@@ -60,16 +60,18 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
             fragmentTransaction.replace(R.id.detail_container, fragment, DETAILFRAGMENT_TAG);
             fragmentTransaction.commit();
         } else {
-            Intent intent = new Intent(getApplicationContext(), MovieActivity.class);
+            if(clicked) {
+                Intent intent = new Intent(getApplicationContext(), MovieActivity.class);
 
-            intent.putExtra("TITLE", gridItem.getOrigTitle());
-            intent.putExtra("OVERVIEW", gridItem.getOverview());
-            intent.putExtra("RATE", gridItem.getVoteAvg());
-            intent.putExtra("YEAR", gridItem.getRelDate());
-            intent.putExtra("IMAGE", gridItem.getImage());
-            intent.putExtra("ID", Integer.toString(gridItem.getId()));
+                intent.putExtra("TITLE", gridItem.getOrigTitle());
+                intent.putExtra("OVERVIEW", gridItem.getOverview());
+                intent.putExtra("RATE", gridItem.getVoteAvg());
+                intent.putExtra("YEAR", gridItem.getRelDate());
+                intent.putExtra("IMAGE", gridItem.getImage());
+                intent.putExtra("ID", Integer.toString(gridItem.getId()));
 
-            startActivity(intent);
+                startActivity(intent);
+            }
         }
     }
 
