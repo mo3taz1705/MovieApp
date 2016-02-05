@@ -2,8 +2,11 @@ package com.example.moutaz.movieapp;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -85,8 +88,12 @@ public class GridFragment extends Fragment {
         if(lastStatus.equals("Fav")){
             updateView();
         }else {
-            new FetchData().execute();
-            mProgressBar.setVisibility(View.VISIBLE);
+            if(isOnline(getActivity())) {
+                new FetchData().execute();
+                mProgressBar.setVisibility(View.VISIBLE);
+            }else {
+                showDialogMsg();
+            }
         }
 
 
@@ -202,10 +209,14 @@ public class GridFragment extends Fragment {
                     mPosition = 0;
                     lastStatus = getString(R.string.popular_tag);
                     noConnection = false;
-                    new FetchData().execute();
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    noFavTV.setVisibility(View.GONE);
-                    gridView.setVisibility(View.VISIBLE);
+                    if(isOnline(getActivity())) {
+                        new FetchData().execute();
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        noFavTV.setVisibility(View.GONE);
+                        gridView.setVisibility(View.VISIBLE);
+                    }else{
+                        showDialogMsg();
+                    }
                 }
                 return true;
             case R.id.rated:
@@ -217,10 +228,14 @@ public class GridFragment extends Fragment {
                     mPosition = 0;
                     lastStatus = getString(R.string.rating_tag);
                     noConnection = false;
-                    new FetchData().execute();
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    noFavTV.setVisibility(View.GONE);
-                    gridView.setVisibility(View.VISIBLE);
+                    if(isOnline(getActivity())) {
+                        new FetchData().execute();
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        noFavTV.setVisibility(View.GONE);
+                        gridView.setVisibility(View.VISIBLE);
+                    }else{
+                        showDialogMsg();
+                    }
                 }
                 return true;
             case R.id.favorites:
@@ -305,6 +320,7 @@ public class GridFragment extends Fragment {
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
+                    noConnection = true;
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -315,6 +331,7 @@ public class GridFragment extends Fragment {
                 }
 
                 if (buffer.length() == 0) {
+                    noConnection = true;
                     return null;
                 }
                 JsonStr = buffer.toString();
@@ -356,8 +373,12 @@ public class GridFragment extends Fragment {
             if(mPosition >= gridItemArrayList.size()) {
                 mPosition = 0;
             }
-            gridView.smoothScrollToPosition(mPosition);
-            ((Callback) getActivity()).onItemSelected(gridItemArrayList.get(mPosition));
+            if(gridItemArrayList.size() > 0) {
+                gridView.smoothScrollToPosition(mPosition);
+                ((Callback) getActivity()).onItemSelected(gridItemArrayList.get(mPosition));
+            }else{
+                showDialogMsg();
+            }
         }
     }
 
@@ -375,5 +396,17 @@ public class GridFragment extends Fragment {
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
+
+    public boolean isOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        return isConnected;
+    }
+
 
 }
