@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -249,6 +250,16 @@ public class GridFragment extends Fragment {
                     lastStatus = "Fav";
                     updateView();
                 }
+                return true;
+
+            case R.id.search:
+                if (item.isChecked())
+                    item.setChecked(false);
+                else
+                    item.setChecked(true);
+                //open search activity
+                Intent intent = new Intent(getActivity().getApplicationContext(), SearchActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
