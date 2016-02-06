@@ -46,13 +46,6 @@ public class SearchActivity extends ActionBarActivity {
 
         initialize();
 
-        //remove options
-        //putDataInArrays
-        //onPostExecute
-        //adapter
-        //add listview click listener
-
-        //image el search tezbit
     }
 
     private void initialize() {
@@ -167,8 +160,8 @@ public class SearchActivity extends ActionBarActivity {
 
                 String link;
                 link = "http://api.themoviedb.org/3/search/movie?query=" + etMovieName.getText().toString() + "&" + getString(R.string.API_KEY);
+                link = link.replace(" ", "%20");
                 URL url = new URL(link);
-
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -218,9 +211,9 @@ public class SearchActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void v) {
-            if(noConnection || listViewArrayList.size()==0)
+            if(noConnection || listViewArrayList.size()==0) {
                 showDialogMsg();
-            else {
+            }else {
                 listViewAdapter.setData(listViewArrayList);
                 mProgressBar.setVisibility(View.GONE);
             }
